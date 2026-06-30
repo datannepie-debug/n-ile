@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0806" />
+    <meta name="color-scheme" content="dark" />
+    <title>N-ILE | Nigeria International Lighting Expo</title>
+    <meta name="description" content="N-ILE 2026 — Africa's premier lighting trade show. September 16–18, Lagos. Register now." />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><radialGradient id='g' cx='40%' cy='35%'><stop offset='0%' color='%23fff8e0'/><stop offset='40%' color='%23F58634'/><stop offset='100%' color='%23d47020'/></radialGradient></defs><circle cx='50' cy='50' r='46' fill='%23fefaf4' stroke='url(%23g)' stroke-width='3'/><circle cx='50' cy='50' r='16' fill='url(%23g)' opacity='0.95'/></svg>" />
+<link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+    <!-- ===== FULLSCREEN VIDEO ===== -->
+    <div class="video-bg" aria-hidden="true">
+        <div class="placeholder"><span>N-ILE 2026</span></div>
+      <video autoplay loop muted playsinline preload="auto"
+        poster="https://via.placeholder.com/1920x1080/0a0806/F58634?text=N-ILE+2026">
+        <source src="https://media.nnepie.com/video/upload/q_auto,f_auto/v1782714534/bicm3l866h5wjihioo3i.mp4" type="video/mp4" />
+    </video>
+    <div class="warm-overlay"></div>
+</div>
+
+<!-- ===== CANVAS ===== -->
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+<!-- ===== AMBIENT ORBS ===== -->
+<div class="ambient-orb ambient-orb--orange" aria-hidden="true"></div>
+<div class="ambient-orb ambient-orb--yellow" aria-hidden="true"></div>
+<div class="ambient-orb ambient-orb--green" aria-hidden="true"></div>
+
+<!-- ===== MAIN ===== -->
+<div class="main-container">
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <a href="https://n-ile.com/" class="logo-link" aria-label="N-ILE Home">
+            <img src="https://retro.ws-expo.com/img/nnepie-logo.png"
+            alt="Nigeria International Lighting Expo Logo"
+            class="logo-img" loading="eager"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
+            <span class="logo-fallback">N-ILE</span>
+        </a>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/2026/about">About</a>
+            <a href="https://n-ile.com/2026/exhibitor">Exhibit</a>
+            <a href="/2026/visit">Visit</a>
+            <a href="https://n-ile.com/2026/register" class="nav-cta">Register</a>
+        </nav>
+    </header>
+
+    <!-- CENTER HERO -->
+    <section class="hero-center">
+        <p class="hero-tagline">Africa's <span>Premier</span> Lighting Trade Show</p>
+
+        <div class="portal-wrapper">
+            <!-- pillars & arch -->
+            <div class="portal-pillars" aria-hidden="true">
+                <div class="portal-pillar"></div>
+                <div class="portal-pillar"></div>
+            </div>
+            <div class="portal-arch" aria-hidden="true"></div>
+
+            <!-- main card -->
+            <a href="https://n-ile.com/2026/" class="portal-door" style="display:block; text-decoration:none; color:inherit; cursor:pointer;">
+                <div class="shimmer" aria-hidden="true"></div>
+                <div class="portal-content">
+                    <div class="portal-year">2026</div>
+                    <h1 class="portal-title">
+                        Nigeria International <span class="highlight">Lighting</span> Expo
+                    </h1>
+                    <p class="portal-date">
+                        <strong>September 16 – 18</strong> &middot; Lagos, Nigeria
+                    </p>
+                    <p class="portal-location">Landmark Centre &bull; Victoria Island</p>
+
+                    <div class="portal-cta-group">
+                        <span class="portal-cta">
+                            Register Now
+                            <span class="arrow" aria-hidden="true">→</span>
+                        </span>
+                        <span class="portal-cta portal-cta--ghost">
+                            View Program
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+  <footer class="site-footer">
+        <span class="copy">&copy; 2026 <strong>Nigeria International Lighting Expo</strong> &mdash; All rights reserved.</span>
+        <div class="footer-links">
+            <a href="/2026/about">About</a>
+            <a href="https://n-ile.com/2026/exhibit">Exhibit</a>
+            <a href="https://n-ile.com/2026/contact">Contact</a>
+            <a href="https://n-ile.com/2026/privacy">Privacy</a>
+        </div>
+    </footer>
+</div>
+
+<!-- ===== SCRIPT ===== -->
+<script>
+    (function() {
+        // ===== CANVAS PARTICLES =====
+        const canvas = document.getElementById('fx-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let w, h, cx, cy;
+        let animationId;
+        const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let isMobile = window.innerWidth < 768;
+
+        const colors = [
+            { h: 28, s: 85, l: 55, a: 0.40 },
+            { h: 55, s: 88, l: 50, a: 0.30 },
+            { h: 154, s: 75, l: 35, a: 0.20 },
+        ];
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            isMobile = w < 768;
+            const card = document.querySelector('.portal-door');
+            if (card) {
+                const r = card.getBoundingClientRect();
+                cx = r.left + r.width / 2;
+                cy = r.top + r.height / 2;
+            } else {
+                cx = w / 2;
+                cy = h * 0.48;
+            }
+            createParticles();
+        }
+
+        function createParticles() {
+            const count = isMobile ? 18 : isReducedMotion ? 8 : 55;
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                const c = colors[Math.floor(Math.random() * colors.length)];
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * Math.max(w, h) * 0.42 + 30;
+                particles.push({
+                    x: cx + Math.cos(angle) * dist,
+                    y: cy + Math.sin(angle) * dist,
+                    size: Math.random() * 2.0 + 0.3,
+                    angle: angle,
+                    orbitRadius: dist,
+                    orbitSpeed: (Math.random() - 0.5) * 0.0018,
+                    pulseSpeed: Math.random() * 0.012 + 0.003,
+                    pulseOffset: Math.random() * Math.PI * 2,
+                    opacity: c.a,
+                    hue: c.h,
+                    sat: c.s,
+                    lit: c.l,
+                    type: Math.random() < 0.2 ? 'orbit' : 'drift'
+                });
+            }
+        }
+
+        function animate(t) {
+            ctx.clearRect(0, 0, w, h);
+
+            if (!isReducedMotion) {
+                const pulse = Math.sin(t * 0.0010) * 0.08 + 0.92;
+                const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 150);
+                glow.addColorStop(0, 'rgba(251,240,19,' + (0.035 * pulse) + ')');
+                glow.addColorStop(0.4, 'rgba(245,134,52,' + (0.02 * pulse) + ')');
+                glow.addColorStop(1, 'transparent');
+                ctx.beginPath();
+                ctx.arc(cx, cy, 150, 0, Math.PI * 2);
+                ctx.fillStyle = glow;
+                ctx.fill();
+
+                particles.forEach(function(p) {
+                    if (p.type === 'orbit') {
+                        p.angle += p.orbitSpeed;
+                        p.x = cx + Math.cos(p.angle) * p.orbitRadius;
+                        p.y = cy + Math.sin(p.angle) * p.orbitRadius;
+                    } else {
+                        const dx = cx - p.x;
+                        const dy = cy - p.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 18) {
+                            const na = Math.random() * Math.PI * 2;
+                            p.x = cx + Math.cos(na) * Math.max(w, h) * 0.32;
+                            p.y = cy + Math.sin(na) * Math.max(w, h) * 0.32;
+                        } else {
+                            const f = 0.10 / (dist * 0.006 + 1);
+                            p.x += dx * f + (Math.random() - 0.5) * 0.12;
+                            p.y += dy * f + (Math.random() - 0.5) * 0.12;
+                        }
+                    }
+                    const pulse2 = Math.sin(t * p.pulseSpeed + p.pulseOffset) * 0.18 + 0.82;
+                    const alpha = p.opacity * pulse2;
+                    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
+                    g.addColorStop(0, 'hsla(' + p.hue + ',' + p.sat + '%,' + p.lit + '%,' + alpha + ')');
+                    g.addColorStop(1, 'transparent');
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+                    ctx.fillStyle = g;
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ',' + p.sat + '%,' + Math.min(p.lit + 25, 92) + '%,' + (alpha *
+                        1.05) + ')';
+                    ctx.fill();
+                });
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function updateCenter() {
+            const card = document.querySelector('.portal-door');
+            if (card) {
+                const r = card.getBoundingClientRect();
+                cx = r.left + r.width / 2;
+                cy = r.top + r.height / 2;
+            } else {
+                cx = w / 2;
+                cy = h * 0.48;
+            }
+            createParticles();
+        }
+
+        window.addEventListener('resize', function() {
+            resize();
+            updateCenter();
+        });
+        window.addEventListener('scroll', updateCenter, { passive: true });
+
+        resize();
+        updateCenter();
+        animate(0);
+
+        setTimeout(updateCenter, 400);
+        setTimeout(updateCenter, 900);
+        setTimeout(updateCenter, 1800);
+
+        // ===== VIDEO LOADING =====
+        const video = document.querySelector('.video-bg video');
+        const placeholder = document.querySelector('.video-bg .placeholder');
+        if (video && placeholder) {
+            if (video.readyState >= 2) {
+                placeholder.style.opacity = '0';
+                setTimeout(function() { placeholder.style.display = 'none'; }, 600);
+            } else {
+                video.addEventListener('canplay', function() {
+                    placeholder.style.opacity = '0';
+                    setTimeout(function() { placeholder.style.display = 'none'; }, 600);
+                });
+                video.addEventListener('error', function() {
+                    placeholder.textContent = '⚡';
+                    placeholder.style.fontSize = '2.4rem';
+                    placeholder.style.opacity = '0.2';
+                });
+            }
+        }
+
+        // ===== SUBTLE MOUSE GLOW =====
+        const glow = document.createElement('div');
+        glow.style.cssText =
+            'position:fixed;pointer-events:none;z-index:3;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(245,134,52,0.05) 0%,rgba(251,240,19,0.02) 30%,transparent 65%);transform:translate(-50%,-50%);opacity:0;transition:opacity 0.8s ease;';
+        document.body.appendChild(glow);
+
+        let gx = -500,
+            gy = -500,
+            cx2 = -500,
+            cy2 = -500,
+            raf2 = false;
+
+        function updateGlow() {
+            const dx = gx - cx2,
+                dy = gy - cy2;
+            cx2 += dx * 0.05;
+            cy2 += dy * 0.05;
+            if (!isMobile && !isReducedMotion) {
+                glow.style.left = cx2 + 'px';
+                glow.style.top = cy2 + 'px';
+                glow.style.opacity = '1';
+            }
+            if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
+                raf2 = true;
+                requestAnimationFrame(function() { raf2 = false;
+                    updateGlow(); });
+            } else {
+                raf2 = false;
+            }
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            if (isMobile || isReducedMotion) return;
+            gx = e.clientX;
+            gy = e.clientY;
+            if (!raf2) {
+                raf2 = true;
+                requestAnimationFrame(function() { raf2 = false;
+                    updateGlow(); });
+            }
+            glow.style.opacity = '1';
+            clearTimeout(glow._t);
+            glow._t = setTimeout(function() { glow.style.opacity = '0'; }, 1500);
+        }, { passive: true });
+
+        document.addEventListener('mouseleave', function() { glow.style.opacity = '0'; });
+    })();
+</script>
+</body>
+</html>
